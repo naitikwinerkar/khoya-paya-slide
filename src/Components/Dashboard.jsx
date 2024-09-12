@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 
-// Import images
 import missing1 from '../assets/images/missing1.jpg';
 import missing2 from '../assets/images/missing2.jpg';
 import missing3 from '../assets/images/missing3.jpg';
@@ -23,6 +22,7 @@ import found8 from '../assets/images/found8.jpg';
 import found9 from '../assets/images/found9.jpg';
 import found10 from '../assets/images/found10.jpg';
 
+// Image arrays
 const missingImages = [
   { id: 1, src: missing1, name: 'Missing Person 1' },
   { id: 2, src: missing2, name: 'Missing Person 2' },
@@ -49,6 +49,7 @@ const foundImages = [
   { id: 10, src: found10, name: 'Found Person 10' },
 ];
 
+// Shuffle function
 const shuffleArray = (array) => {
   return array
     .map((item) => ({ item, sort: Math.random() }))
@@ -66,35 +67,45 @@ const Dashboard = () => {
   const visibleImagesCount = 4; // Show 4 images at a time
 
   useEffect(() => {
-    setShuffledMissingImages(shuffleArray(missingImages));
-    setShuffledFoundImages(shuffleArray(foundImages));
+    setShuffledMissingImages((missingImages));
+    setShuffledFoundImages((foundImages));
   }, [displayCategory]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => {
         const newIndex = prevIndex + visibleImagesCount;
-        const maxIndex = Math.max(shuffledMissingImages.length, shuffledFoundImages.length) - visibleImagesCount;
-        return newIndex > maxIndex ? 0 : newIndex;
+
+        const totalImages =
+          displayCategory === "missing"
+            ? shuffledMissingImages.length
+            : displayCategory === "found"
+            ? shuffledFoundImages.length
+            : shuffledMissingImages.length + shuffledFoundImages.length;
+
+        const maxIndex = totalImages - visibleImagesCount;
+        return newIndex >= totalImages ? 0 : newIndex;
       });
     }, scrollInterval * 1000);
-
+  
     return () => clearInterval(interval);
-  }, [scrollInterval, shuffledMissingImages, shuffledFoundImages]);
+  }, [scrollInterval, shuffledMissingImages, shuffledFoundImages, visibleImagesCount, displayCategory]);  
 
-  const renderImages = (images, startIndex) => {
+  const renderImages = (images, startIndex, category, type) => {
     const imagesToShow = images.slice(startIndex, startIndex + visibleImagesCount);
-    const rows = [
-      imagesToShow.slice(0, 2),
-      imagesToShow.slice(2, 4)
-    ];
+    console.log("type",type);
+    
+    const rows = type === 'both' ? [imagesToShow.slice(0, 2)] : [imagesToShow.slice(0, 2),imagesToShow.slice(2, 4)];
 
     return rows.map((rowImages, rowIndex) => (
       <div key={rowIndex} className="row">
-        {rowImages.map((image) => (
+        {rowImages.map((image,index) => (
           <div key={image.id} className="image-container">
-            <img src={image.src} alt={image.name} />
-            <p>{image.name}</p>
+            <img src={image.src} alt={image.name} className="image" />
+            <div className={`watermark ${category === 'missing' ? 'missing' : 'found'}`}>
+              {category === 'missing' ? `Missing Person` : `Found Person`}
+            </div>
+            <p>{}</p>
           </div>
         ))}
       </div>
@@ -102,19 +113,23 @@ const Dashboard = () => {
   };
 
   const renderContent = () => {
+    
+    
     const missingStartIndex = currentIndex % shuffledMissingImages.length;
     const foundStartIndex = currentIndex % shuffledFoundImages.length;
 
+    console.log(currentIndex,missingStartIndex,foundStartIndex);
+
     switch (displayCategory) {
       case 'missing':
-        return renderImages(shuffledMissingImages, missingStartIndex);
+        return renderImages(shuffledMissingImages, missingStartIndex, 'missing', 'missing');
       case 'found':
-        return renderImages(shuffledFoundImages, foundStartIndex);
+        return renderImages(shuffledFoundImages, foundStartIndex, 'found', 'found');
       case 'both':
         return (
           <>
-            {renderImages(shuffledFoundImages, foundStartIndex)}
-            {renderImages(shuffledMissingImages, missingStartIndex)}
+            {renderImages(shuffledFoundImages, foundStartIndex, 'found', 'both')}
+            {renderImages(shuffledMissingImages, missingStartIndex, 'missing', 'both')}
           </>
         );
       default:
@@ -154,11 +169,10 @@ const Dashboard = () => {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 15px 20px 0px 20px;
             background-color: #f4f4f4;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            max-width: 90%;
             margin: auto;
           }
 
@@ -175,15 +189,16 @@ const Dashboard = () => {
           }
 
           .control-group label {
-            margin-right: 10px;
+            margin-right: 20px;
             font-weight: bold;
+            font-size:23px;
           }
 
           .control-group select {
             padding: 5px 10px;
             border-radius: 5px;
             border: 1px solid #ccc;
-            font-size: 16px;
+            font-size: 20px;
           }
 
           .image-display {
@@ -196,26 +211,28 @@ const Dashboard = () => {
           .row {
             display: flex;
             justify-content: center;
-            margin-bottom: 50px;
+            margin-bottom: 10px;
+            width: 90%;
+            height: 294px;
           }
 
           .image-container {
-            width: 100%;
-            max-width: 200px;
-            margin: 10px;
+            width: 40rem;
+            max-width: 100%;
+            margin: 8px;
             text-align: center;
+            position: relative;
           }
 
-          img {
-            width: 100%;
-            height: auto;
+          .image {
+            width: 65%;
+            height: 95%;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
           }
 
-          img:hover {
-            transform: scale(4.2);
+          .image:hover {
+            transform: scale(1.05);
           }
 
           p {
@@ -223,9 +240,21 @@ const Dashboard = () => {
             font-size: 20px;
             font-weight: bold;
             color: red;
-            padding: 20px;
-            border-radius: 500px;
-          
+          }
+
+          .watermark {
+            position: absolute;
+            top: 55px;
+            left: 101px;
+            transform: rotate(-45deg);
+            background-color: rgba(255, 0, 0, 0.7);;
+            padding: 9px;
+            color: #FFF;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: left;
+            width: 150px;
+            text-align: center;
           }
 
           .missing {
