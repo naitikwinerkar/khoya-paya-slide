@@ -71,25 +71,25 @@ const Dashboard = () => {
     setShuffledFoundImages((foundImages));
   }, [displayCategory]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => {
-        const newIndex = prevIndex + visibleImagesCount;
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setCurrentIndex((prevIndex) => {
+  //       const newIndex = prevIndex + visibleImagesCount;
 
-        const totalImages =
-          displayCategory === "missing"
-            ? shuffledMissingImages.length
-            : displayCategory === "found"
-            ? shuffledFoundImages.length
-            : shuffledMissingImages.length + shuffledFoundImages.length;
+  //       const totalImages =
+  //         displayCategory === "missing"
+  //           ? shuffledMissingImages.length
+  //           : displayCategory === "found"
+  //           ? shuffledFoundImages.length
+  //           : shuffledMissingImages.length + shuffledFoundImages.length;
 
-        const maxIndex = totalImages - visibleImagesCount;
-        return newIndex >= totalImages ? 0 : newIndex;
-      });
-    }, scrollInterval * 1000);
+  //       const maxIndex = totalImages - visibleImagesCount;
+  //       return newIndex >= totalImages ? 0 : newIndex;
+  //     });
+  //   }, scrollInterval * 1000);
   
-    return () => clearInterval(interval);
-  }, [scrollInterval, shuffledMissingImages, shuffledFoundImages, visibleImagesCount, displayCategory]);  
+  //   return () => clearInterval(interval);
+  // }, [scrollInterval, shuffledMissingImages, shuffledFoundImages, visibleImagesCount, displayCategory]);  
 
   const renderImages = (images, startIndex, category, type) => {
     const imagesToShow = images.slice(startIndex, startIndex + visibleImagesCount);
@@ -212,12 +212,12 @@ const Dashboard = () => {
             display: flex;
             justify-content: center;
             margin-bottom: 10px;
-            width: 90%;
+            width: 100%;
             height: 294px;
           }
 
           .image-container {
-            width: 40rem;
+            width: 50rem;
             max-width: 100%;
             margin: 8px;
             text-align: center;
@@ -225,7 +225,7 @@ const Dashboard = () => {
           }
 
           .image {
-            width: 65%;
+            width: 98%;
             height: 95%;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -244,8 +244,8 @@ const Dashboard = () => {
 
           .watermark {
             position: absolute;
-            top: 55px;
-            left: 101px;
+            top: 54px;
+            left: -4px;
             transform: rotate(-45deg);
             background-color: rgba(255, 0, 0, 0.7);;
             padding: 9px;
