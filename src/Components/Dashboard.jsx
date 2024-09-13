@@ -49,47 +49,39 @@ const foundImages = [
   { id: 10, src: found10, name: 'Found Person 10' },
 ];
 
-// Shuffle function
-const shuffleArray = (array) => {
-  return array
-    .map((item) => ({ item, sort: Math.random() }))
-    .sort((a, b) => a.sort - b.sort)
-    .map(({ item }) => item);
-};
-
 const Dashboard = () => {
-  const [scrollInterval, setScrollInterval] = useState(3); // Default to 3 seconds
-  const [displayCategory, setDisplayCategory] = useState('both'); // Default to show both
+  const [scrollInterval, setScrollInterval] = useState(3);
+  const [displayCategory, setDisplayCategory] = useState('both');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [shuffledMissingImages, setShuffledMissingImages] = useState([]);
   const [shuffledFoundImages, setShuffledFoundImages] = useState([]);
 
-  const visibleImagesCount = 4; // Show 4 images at a time
+  const visibleImagesCount = 4;
 
   useEffect(() => {
     setShuffledMissingImages((missingImages));
     setShuffledFoundImages((foundImages));
   }, [displayCategory]);
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setCurrentIndex((prevIndex) => {
-  //       const newIndex = prevIndex + visibleImagesCount;
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex) => {
+        const newIndex = prevIndex + visibleImagesCount;
 
-  //       const totalImages =
-  //         displayCategory === "missing"
-  //           ? shuffledMissingImages.length
-  //           : displayCategory === "found"
-  //           ? shuffledFoundImages.length
-  //           : shuffledMissingImages.length + shuffledFoundImages.length;
+        const totalImages =
+          displayCategory === "missing"
+            ? shuffledMissingImages.length
+            : displayCategory === "found"
+            ? shuffledFoundImages.length
+            : shuffledMissingImages.length + shuffledFoundImages.length;
 
-  //       const maxIndex = totalImages - visibleImagesCount;
-  //       return newIndex >= totalImages ? 0 : newIndex;
-  //     });
-  //   }, scrollInterval * 1000);
+        const maxIndex = totalImages - visibleImagesCount;
+        return newIndex >= totalImages ? 0 : newIndex;
+      });
+    }, scrollInterval * 1000);
   
-  //   return () => clearInterval(interval);
-  // }, [scrollInterval, shuffledMissingImages, shuffledFoundImages, visibleImagesCount, displayCategory]);  
+    return () => clearInterval(interval);
+  }, [scrollInterval, shuffledMissingImages, shuffledFoundImages, visibleImagesCount, displayCategory]);  
 
   const renderImages = (images, startIndex, category, type) => {
     const imagesToShow = images.slice(startIndex, startIndex + visibleImagesCount);
